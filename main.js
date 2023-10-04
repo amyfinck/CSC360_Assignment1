@@ -69,10 +69,10 @@ var rock1Position = [0, -5, 0];
 
 var rock2Position = [-1.5, -5.5, 0];
 
-var leftSeaweedBase = [-0.8, -4.1, 0];
+var leftSeaweedBase = [-0.8, -4.5, 0];
 var leftSeaweedRotation = [0,0,0];
 var centreSeaweedBase = [-0, -3.7, 0];
-var rightSeaweedBase = [0.8, -4.1, 0];
+var rightSeaweedBase = [0.8, -4.5, 0];
 
 
 // Setting the colour which is needed during illumination of a surface
@@ -322,16 +322,100 @@ function render(timestamp) {
 	
 	// left seaweed
 	gPush();
-	gTranslate(leftSeaweedBase[0], leftSeaweedBase[1], leftSeaweedBase[2]);
-	for(i = 0; i < 10; i++)
 	{
+		leftSeaweedRotation[1] = leftSeaweedRotation[1] + 1;
+		setColor(vec4(0.0, 1.0, 0.0 ,1.0));
+		//leftSeaweedRotation[1] = leftSeaweedRotation[1] + 1;
+		gTranslate(leftSeaweedBase[0], leftSeaweedBase[1], leftSeaweedBase[2]);
+		gRotate(leftSeaweedRotation[1], 0, 0, 1);
 		gPush();
 		{
-			// Draw the sphere!
-			gScale(0.1, 0.3,1);
-			gTranslate(0, 2*i, 0);
-			gRotate(1.5, 1, 1,1);
-			setColor(vec4(0.0, 1.0, 0.0 ,1.0));
+			// draw the first section
+			gTranslate(0, 0.3, 0);
+			gScale(0.1, 0.3, 1);
+			drawSphere();
+		}
+		gPop();
+		// now add the 'knuckle'
+		// this is the location of the knuckle
+		gTranslate(0, 0.6, 0);
+		gRotate(leftSeaweedRotation[1], 0, 0, 1);
+		gPush();
+		{
+			gTranslate(0, 0.3, 0);
+			gScale(0.1, 0.3, 1);
+			drawSphere();
+		}
+		gPop();
+		gTranslate(0, 0.6, 0);
+		gRotate(leftSeaweedRotation[1] , 0, 0, 1);
+		gPush();
+		{
+			gTranslate(0, 0.3, 0);
+			gScale(0.1, 0.3, 1);
+			drawSphere();
+		}
+		gPop();
+		gTranslate(0, 0.6, 0);
+		gRotate(leftSeaweedRotation[1] , 0, 0, 1);
+		gPush();
+		{
+			gTranslate(0, 0.3, 0);
+			gScale(0.1, 0.3, 1);
+			drawSphere();
+		}
+		gPop();
+		gTranslate(0, 0.6, 0);
+		gRotate(leftSeaweedRotation[1] , 0, 0, 1);
+		gPush();
+		{
+			gTranslate(0, 0.3, 0);
+			gScale(0.1, 0.3, 1);
+			drawSphere();
+		}
+		gPop();
+		gTranslate(0, 0.6, 0);
+		gRotate(leftSeaweedRotation[1] , 0, 0, 1);
+		gPush();
+		{
+			gTranslate(0, 0.3, 0);
+			gScale(0.1, 0.3, 1);
+			drawSphere();
+		}
+		gPop();
+		gTranslate(0, 0.6, 0);
+		gRotate(leftSeaweedRotation[1] , 0, 0, 1);
+		gPush();
+		{
+			gTranslate(0, 0.3, 0);
+			gScale(0.1, 0.3, 1);
+			drawSphere();
+		}
+		gPop();
+		gTranslate(0, 0.6, 0);
+		gRotate(leftSeaweedRotation[1] , 0, 0, 1);
+		gPush();
+		{
+			gTranslate(0, 0.3, 0);
+			gScale(0.1, 0.3, 1);
+			drawSphere();
+		}
+		gPop();
+		gTranslate(0, 0.6, 0);
+		gRotate(leftSeaweedRotation[1] , 0, 0, 1);
+		gPush();
+		{
+			gTranslate(0, 0.3, 0);
+			gScale(0.1, 0.3, 1);
+			drawSphere();
+		}
+		gPop();
+		gTranslate(0, 0.6, 0);
+		gRotate(leftSeaweedRotation[1] , 0, 0, 1);
+		gPush();
+		{
+			gTranslate(0, 0.3, 0);
+			gScale(0.1, 0.3, 1);
 			drawSphere();
 		}
 		gPop();
@@ -349,8 +433,6 @@ function render(timestamp) {
 		{
 			gScale(0.1, 0.3,1);
 			gTranslate(0, 2*i, 0);
-			leftSeaweedRotation[1] = leftSeaweedRotation[1] + 30;
-			gRotate(leftSeaweedRotation[1],0,0,1);
 			drawSphere();
 		}
 		gPop();
