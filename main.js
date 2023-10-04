@@ -61,13 +61,27 @@ var cylinderPosition = [1.1,0,0];
 var coneRotation = [0,0,0];
 var conePosition = [3,0,0];
 
+
+/* OBJECT POSITIONS
+ */
+
+var rock1Position = [0, -5, 0];
+
+var rock2Position = [-1.5, -5.5, 0];
+
+var leftSeaweedBase = [-0.8, -4.1, 0];
+var leftSeaweedRotation = [0,0,0];
+var centreSeaweedBase = [-0, -3.7, 0];
+var rightSeaweedBase = [0.8, -4.1, 0];
+
+
 // Setting the colour which is needed during illumination of a surface
 function setColor(c)
 {
     ambientProduct = mult(lightAmbient, c);
     diffuseProduct = mult(lightDiffuse, c);
     specularProduct = mult(lightSpecular, materialSpecular);
-    
+
     gl.uniform4fv( gl.getUniformLocation(program,
                                          "ambientProduct"),flatten(ambientProduct) );
     gl.uniform4fv( gl.getUniformLocation(program,
@@ -106,9 +120,9 @@ window.onload = function init() {
     Cube.init(program);
     Cylinder.init(20,program);
     Cone.init(20,program);
-    Sphere.init(36,program);
+    Sphere.init(36, program, 1);
 
-    // Matrix uniforms
+	// Matrix uniforms
     modelViewMatrixLoc = gl.getUniformLocation( program, "modelViewMatrix" );
     normalMatrixLoc = gl.getUniformLocation( program, "normalMatrix" );
     projectionMatrixLoc = gl.getUniformLocation( program, "projectionMatrix" );
@@ -177,6 +191,15 @@ function drawSphere() {
     Sphere.draw();
 }
 
+// Draws a sphere centered at the origin with variable radius.
+// Sets the modelview matrix and the normal matrix of the global program
+// Sets the attributes and calls draw arrays
+function drawSphere() {
+	setMV();
+	Sphere.draw();
+}
+
+
 // Draws a cylinder along z of height 1 centered at the origin
 // and radius 0.5.
 // Sets the modelview matrix and the normal matrix of the global program
@@ -226,7 +249,8 @@ function gPush() {
 
 function render(timestamp) {
     
-    gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    let i;
+	gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     
     eye = vec3(0,0,10);
     MS = []; // Initialize modeling matrix stack
@@ -239,8 +263,7 @@ function render(timestamp) {
    
     // set the projection matrix
     projectionMatrix = ortho(left, right, bottom, ytop, near, far);
-    
-    
+	
     // set all the matrices
     setAllMatrices();
     
@@ -269,6 +292,92 @@ function render(timestamp) {
 			drawSphere();
 		}
 		gPop();
+	gPop();
+
+	// Rock 1
+	gPush();
+	gTranslate(rock1Position[0], rock1Position[1], rock1Position[2]);
+		gPush();
+		{
+			// Draw the sphere!
+			setColor(vec4(0.5,0.5,0.5,1.0));
+			drawSphere();
+		}
+		gPop();
+	gPop();
+	
+	// Rock 2
+	gPush();
+	// Put the sphere where it should be!
+	gTranslate(rock2Position[0], rock2Position[1], rock2Position[2]);
+		gPush();
+		{
+			// Draw the sphere!
+			gScale(0.5, 0.5,1)
+			setColor(vec4(0.5,0.5,0.5,1.0));
+			drawSphere();
+		}
+		gPop();
+	gPop();
+	
+	// left seaweed
+	gPush();
+	gTranslate(leftSeaweedBase[0], leftSeaweedBase[1], leftSeaweedBase[2]);
+	for(i = 0; i < 10; i++)
+	{
+		gPush();
+		{
+			// Draw the sphere!
+			gScale(0.1, 0.3,1);
+			gTranslate(0, 2*i, 0);
+			gRotate(1.5, 1, 1,1);
+			setColor(vec4(0.0, 1.0, 0.0 ,1.0));
+			drawSphere();
+		}
+		gPop();
+	}
+	gPop();
+	// done with left seaweed
+
+	// centre seaweed
+	gPush();
+	gTranslate(centreSeaweedBase[0], centreSeaweedBase[1], centreSeaweedBase[2]);
+	for(let i = 0; i < 10; i++)
+	{
+		setColor(vec4(0.0, 1.0, 0.0 ,1.0));
+		gPush();
+		{
+			gScale(0.1, 0.3,1);
+			gTranslate(0, 2*i, 0);
+			leftSeaweedRotation[1] = leftSeaweedRotation[1] + 30;
+			gRotate(leftSeaweedRotation[1],0,0,1);
+			drawSphere();
+		}
+		gPop();
+	}
+	gPop();
+	// done with centre seaweed
+
+	// centre seaweed
+	gPush();
+	gTranslate(rightSeaweedBase[0], rightSeaweedBase[1], rightSeaweedBase[2]);
+	for(let i = 0; i < 10; i++)
+	{
+		setColor(vec4(0.0, 1.0, 0.0 ,1.0));
+		gPush();
+		{
+			// Draw the sphere!
+			gScale(0.1, 0.3,1);
+			gTranslate(0, 2*i, 0);
+			cubeRotation[1] = cubeRotation[1] + 30*dt;
+			// This calls a simple helper function to apply the rotation (theta, x, y, z), 
+			// where x,y,z define the axis of rotation. Here is is the y axis, (0,1,0).
+			gRotate(cubeRotation[1],0,0,1);
+			drawSphere();		
+		}
+		gPop();
+	}
+	// done with centre seaweed
 	gPop();
     
 	// Cube example

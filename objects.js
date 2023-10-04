@@ -7,7 +7,6 @@ function setAttribPointers(obj) {
     
 }
 
-
 function setBuffers(obj, program)
 {
     obj.nBuffer = gl.createBuffer();
@@ -77,7 +76,6 @@ SphereSub.divideTriangle = function (a, b, c, count) {
     }
 }
 
-
 SphereSub.tetrahedron = function (a, b, c, d, n) {
     this.divideTriangle(a, b, c, n);
     this.divideTriangle(d, c, b, n);
@@ -85,6 +83,10 @@ SphereSub.tetrahedron = function (a, b, c, d, n) {
     this.divideTriangle(a, c, d, n);
 }
 
+/*
+ * sets up a tetrahedron by providing its vertices and a specified number of subdivisions. It then sets up buffers for 
+ * the object using the setBuffers function.
+ */
 SphereSub.init = function (program) {
     var va = vec4(0.0, 0.0, -1.0,1);
     var vb = vec4(0.0, 0.942809, 0.333333, 1);
@@ -94,7 +96,6 @@ SphereSub.init = function (program) {
     this.tetrahedron(va, vb, vc, vd, this.numTimesToSubdivide);
     setBuffers(this, program);
 }
-
 
 SphereSub.draw = function() {
 
@@ -388,26 +389,32 @@ Cone.draw = function() {
     
 }
 
-
-
 //------------ sphere ------------------------
 
+// This creates a new object literal named sphere
 Sphere = {} ;
 
-
+// set attributes pointsArray and normalsArray to empty arrays
 Sphere.pointsArray = [];
 Sphere.normalsArray = [];
 
-Sphere.getVertex = function (uu, vv)
+/*
+ * set a getVertex method.
+ * uu is a value that ranges from 0 to 1, representing a position on the texture from left to right.
+ * vv is a value that ranges from 0 to 1, representing a position on the texture from left to right.
+ */
+Sphere.getVertex = function (uu, vv, rad)
 {
+    // object literal notation to create vd
     var vd = {} ;
-    var u = uu*Math.PI ;
-    var v = vv*2*Math.PI ;
+    // 0 - pi: azemuthal angle from x to y
+    var u = uu*Math.PI;
+    var v = vv*2*Math.PI;
     
     vd.position = vec4(Math.cos(u)*Math.sin(v),
                        Math.sin(u)*Math.sin(v),
                        Math.cos(v),
-                       1.0) ;
+                       1/rad) ;
     vd.normal = vec3(vd.position[0], vd.position[1],vd.position[2])  ;
     
     vd.colour = vec4(1.0,0.0,0.0,1.0) ;
@@ -440,9 +447,11 @@ function flip(vd1, vd2, vd3) {
     return false ;
 }
 
-Sphere.init = function(n, program)
+/*
+ * initializing a sphere mesh by generating its vertices and triangles based on the specified resolution (n)
+ */
+Sphere.init = function(n, program, rad)
 {
-    
     this.n = n ;
     if( this.n < 1) return;
     
@@ -458,10 +467,10 @@ Sphere.init = function(n, program)
             //cerr << "(" << u << "," << v+dv << ")" << endl ;
             
             // make them into triangles
-            var vd1 = this.getVertex(u,v) ;
-            var vd2 = this.getVertex(u+du,v) ;
-            var vd3 = this.getVertex(u+du,v+dv) ;
-            var vd4 = this.getVertex(u,v+dv) ;
+            var vd1 = this.getVertex(u,v, rad) ;
+            var vd2 = this.getVertex(u+du,v, rad) ;
+            var vd3 = this.getVertex(u+du,v+dv, rad) ;
+            var vd4 = this.getVertex(u,v+dv, rad) ;
             
             // Triangle one
             if( !flip(vd1,vd2,vd3) ) {
@@ -475,7 +484,6 @@ Sphere.init = function(n, program)
                 AddInAttribArrays(this,vd2) ;
                 
             }
-            
             
             // Triangle two
             if( !flip(vd3,vd4,vd1) ) {
@@ -494,8 +502,6 @@ Sphere.init = function(n, program)
     setBuffers(this, program);
 }
 
-
-
 Sphere.draw = function() {
     
     gl.frontFace(gl.CW) ;
@@ -504,7 +510,6 @@ Sphere.draw = function() {
     
     setAttribPointers(this) ;
     gl.drawArrays(gl.TRIANGLES, 0,this.n*this.n*6 );
-    
 }
 
 
