@@ -71,9 +71,10 @@ var rock2Position = [-1.5, -5.5, 0];
 
 var leftSeaweedBase = [-0.8, -4.5, 0];
 var leftSeaweedRotation = [0,0,0];
-var centreSeaweedBase = [-0, -3.7, 0];
+var centreSeaweedBase = [-0, -4, 0];
+var centreSeaweedRotation = [0,0,0];
 var rightSeaweedBase = [0.8, -4.5, 0];
-
+var rightSeaweedRotation = [0,0,0];
 
 // Setting the colour which is needed during illumination of a surface
 function setColor(c)
@@ -323,9 +324,10 @@ function render(timestamp) {
 	// left seaweed
 	gPush();
 	{
-		leftSeaweedRotation[1] = leftSeaweedRotation[1] + 1;
-		setColor(vec4(0.0, 1.0, 0.0 ,1.0));
-		//leftSeaweedRotation[1] = leftSeaweedRotation[1] + 1;
+		setColor(vec4(0.0, 1.0, 0.0, 1.0));
+
+		// TODO not tied to cubeRotation
+		leftSeaweedRotation[1] = 2*Math.cos(cubeRotation[1]/23);
 		gTranslate(leftSeaweedBase[0], leftSeaweedBase[1], leftSeaweedBase[2]);
 		gRotate(leftSeaweedRotation[1], 0, 0, 1);
 		gPush();
@@ -425,14 +427,101 @@ function render(timestamp) {
 
 	// centre seaweed
 	gPush();
-	gTranslate(centreSeaweedBase[0], centreSeaweedBase[1], centreSeaweedBase[2]);
-	for(let i = 0; i < 10; i++)
 	{
-		setColor(vec4(0.0, 1.0, 0.0 ,1.0));
+		setColor(vec4(0.0, 1.0, 0.0, 1.0));
+
+		// TODO not tied to cubeRotation
+		centreSeaweedRotation[1] = 2*Math.cos(cubeRotation[1]/23);
+		gTranslate(centreSeaweedBase[0], centreSeaweedBase[1], centreSeaweedBase[2]);
+		gRotate(centreSeaweedRotation[1], 0, 0, 1);
 		gPush();
 		{
-			gScale(0.1, 0.3,1);
-			gTranslate(0, 2*i, 0);
+			// draw the first section
+			gTranslate(0, 0.3, 0);
+			gScale(0.1, 0.3, 1);
+			drawSphere();
+		}
+		gPop();
+		// now add the 'knuckle'
+		// this is the location of the knuckle
+		gTranslate(0, 0.6, 0);
+		gRotate(centreSeaweedRotation[1], 0, 0, 1);
+		gPush();
+		{
+			gTranslate(0, 0.3, 0);
+			gScale(0.1, 0.3, 1);
+			drawSphere();
+		}
+		gPop();
+		gTranslate(0, 0.6, 0);
+		gRotate(centreSeaweedRotation[1] , 0, 0, 1);
+		gPush();
+		{
+			gTranslate(0, 0.3, 0);
+			gScale(0.1, 0.3, 1);
+			drawSphere();
+		}
+		gPop();
+		gTranslate(0, 0.6, 0);
+		gRotate(centreSeaweedRotation[1] , 0, 0, 1);
+		gPush();
+		{
+			gTranslate(0, 0.3, 0);
+			gScale(0.1, 0.3, 1);
+			drawSphere();
+		}
+		gPop();
+		gTranslate(0, 0.6, 0);
+		gRotate(centreSeaweedRotation[1] , 0, 0, 1);
+		gPush();
+		{
+			gTranslate(0, 0.3, 0);
+			gScale(0.1, 0.3, 1);
+			drawSphere();
+		}
+		gPop();
+		gTranslate(0, 0.6, 0);
+		gRotate(centreSeaweedRotation[1] , 0, 0, 1);
+		gPush();
+		{
+			gTranslate(0, 0.3, 0);
+			gScale(0.1, 0.3, 1);
+			drawSphere();
+		}
+		gPop();
+		gTranslate(0, 0.6, 0);
+		gRotate(centreSeaweedRotation[1] , 0, 0, 1);
+		gPush();
+		{
+			gTranslate(0, 0.3, 0);
+			gScale(0.1, 0.3, 1);
+			drawSphere();
+		}
+		gPop();
+		gTranslate(0, 0.6, 0);
+		gRotate(centreSeaweedRotation[1] , 0, 0, 1);
+		gPush();
+		{
+			gTranslate(0, 0.3, 0);
+			gScale(0.1, 0.3, 1);
+			drawSphere();
+		}
+		gPop();
+		gTranslate(0, 0.6, 0);
+		gRotate(centreSeaweedRotation[1] , 0, 0, 1);
+		gPush();
+		{
+			gTranslate(0, 0.3, 0);
+			gScale(0.1, 0.3, 1);
+			drawSphere();
+		}
+		gPop();
+		gTranslate(0, 0.6, 0);
+		gRotate(centreSeaweedRotation[1] , 0, 0, 1);
+		gPush();
+		{
+			gTranslate(0, 0.3, 0);
+			gScale(0.1, 0.3, 1);
 			drawSphere();
 		}
 		gPop();
@@ -442,25 +531,109 @@ function render(timestamp) {
 
 	// centre seaweed
 	gPush();
-	gTranslate(rightSeaweedBase[0], rightSeaweedBase[1], rightSeaweedBase[2]);
-	for(let i = 0; i < 10; i++)
 	{
-		setColor(vec4(0.0, 1.0, 0.0 ,1.0));
+		setColor(vec4(0.0, 1.0, 0.0, 1.0));
+
+		// TODO not tied to cubeRotation
+		rightSeaweedRotation[1] = 2*Math.cos(cubeRotation[1]/23);
+		gTranslate(rightSeaweedBase[0], rightSeaweedBase[1], rightSeaweedBase[2]);
+		gRotate(rightSeaweedRotation[1], 0, 0, 1);
 		gPush();
 		{
-			// Draw the sphere!
-			gScale(0.1, 0.3,1);
-			gTranslate(0, 2*i, 0);
-			cubeRotation[1] = cubeRotation[1] + 30*dt;
-			// This calls a simple helper function to apply the rotation (theta, x, y, z), 
-			// where x,y,z define the axis of rotation. Here is is the y axis, (0,1,0).
-			gRotate(cubeRotation[1],0,0,1);
-			drawSphere();		
+			// draw the first section
+			gTranslate(0, 0.3, 0);
+			gScale(0.1, 0.3, 1);
+			drawSphere();
+		}
+		gPop();
+		// now add the 'knuckle'
+		// this is the location of the knuckle
+		gTranslate(0, 0.6, 0);
+		gRotate(rightSeaweedRotation[1], 0, 0, 1);
+		gPush();
+		{
+			gTranslate(0, 0.3, 0);
+			gScale(0.1, 0.3, 1);
+			drawSphere();
+		}
+		gPop();
+		gTranslate(0, 0.6, 0);
+		gRotate(rightSeaweedRotation[1] , 0, 0, 1);
+		gPush();
+		{
+			gTranslate(0, 0.3, 0);
+			gScale(0.1, 0.3, 1);
+			drawSphere();
+		}
+		gPop();
+		gTranslate(0, 0.6, 0);
+		gRotate(rightSeaweedRotation[1] , 0, 0, 1);
+		gPush();
+		{
+			gTranslate(0, 0.3, 0);
+			gScale(0.1, 0.3, 1);
+			drawSphere();
+		}
+		gPop();
+		gTranslate(0, 0.6, 0);
+		gRotate(rightSeaweedRotation[1] , 0, 0, 1);
+		gPush();
+		{
+			gTranslate(0, 0.3, 0);
+			gScale(0.1, 0.3, 1);
+			drawSphere();
+		}
+		gPop();
+		gTranslate(0, 0.6, 0);
+		gRotate(rightSeaweedRotation[1] , 0, 0, 1);
+		gPush();
+		{
+			gTranslate(0, 0.3, 0);
+			gScale(0.1, 0.3, 1);
+			drawSphere();
+		}
+		gPop();
+		gTranslate(0, 0.6, 0);
+		gRotate(rightSeaweedRotation[1] , 0, 0, 1);
+		gPush();
+		{
+			gTranslate(0, 0.3, 0);
+			gScale(0.1, 0.3, 1);
+			drawSphere();
+		}
+		gPop();
+		gTranslate(0, 0.6, 0);
+		gRotate(rightSeaweedRotation[1] , 0, 0, 1);
+		gPush();
+		{
+			gTranslate(0, 0.3, 0);
+			gScale(0.1, 0.3, 1);
+			drawSphere();
+		}
+		gPop();
+		gTranslate(0, 0.6, 0);
+		gRotate(rightSeaweedRotation[1] , 0, 0, 1);
+		gPush();
+		{
+			gTranslate(0, 0.3, 0);
+			gScale(0.1, 0.3, 1);
+			drawSphere();
+		}
+		gPop();
+		gTranslate(0, 0.6, 0);
+		gRotate(rightSeaweedRotation[1] , 0, 0, 1);
+		gPush();
+		{
+			gTranslate(0, 0.3, 0);
+			gScale(0.1, 0.3, 1);
+			drawSphere();
 		}
 		gPop();
 	}
-	// done with centre seaweed
 	gPop();
+	// done with right seaweed
+	
+	
     
 	// Cube example
 	gPush();
@@ -470,6 +643,8 @@ function render(timestamp) {
 			setColor(vec4(0.0,1.0,0.0,1.0));
 			// Here is an example of integration to rotate the cube around the y axis at 30 degrees per second
 			// new cube rotation around y = current cube rotation around y + 30deg/s*dt
+			//console.log(cubeRotation[1] + "->" +  cubeRotation[1] + 30*dt);
+			console.log(dt);
 			cubeRotation[1] = cubeRotation[1] + 30*dt;
 			// This calls a simple helper function to apply the rotation (theta, x, y, z), 
 			// where x,y,z define the axis of rotation. Here is is the y axis, (0,1,0).
