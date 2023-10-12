@@ -59,7 +59,9 @@ var cylinderRotation = [0,0,0];
 var cylinderPosition = [1.1,0,0];
 
 var coneRotation = [0,0,0];
-var conePosition = [3,0,0];
+var conePosition = [0,0,0];
+
+var time = [0, 0, 0];
 
 
 /* OBJECT POSITIONS
@@ -248,7 +250,8 @@ function gPush() {
 }
 
 
-function render(timestamp) {
+function render(timestamp) 
+{
     
     let i;
 	gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -281,404 +284,247 @@ function render(timestamp) {
 		dt = (timestamp - prevTime) / 1000.0;
 		prevTime = timestamp;
 	}
-	
-	// Sphere example
-	gPush();
-		// Put the sphere where it should be!
-		gTranslate(spherePosition[0],spherePosition[1],spherePosition[2]);
-		gPush();
-		{
-			// Draw the sphere!
-			setColor(vec4(1.0,0.0,0.0,1.0));
-			drawSphere();
-		}
-		gPop();
-	gPop();
 
-	// Rock 1
-	gPush();
-	gTranslate(rock1Position[0], rock1Position[1], rock1Position[2]);
-		gPush();
-		{
-			// Draw the sphere!
-			setColor(vec4(0.5,0.5,0.5,1.0));
-			drawSphere();
-		}
-		gPop();
-	gPop();
+	time[1] = time[1] + 30*dt;
 	
-	// Rock 2
-	gPush();
-	// Put the sphere where it should be!
-	gTranslate(rock2Position[0], rock2Position[1], rock2Position[2]);
-		gPush();
-		{
-			// Draw the sphere!
-			gScale(0.5, 0.5,1)
-			setColor(vec4(0.5,0.5,0.5,1.0));
-			drawSphere();
-		}
-		gPop();
-	gPop();
-	
-	// left seaweed
+	// Ground box
 	gPush();
 	{
-		setColor(vec4(0.0, 1.0, 0.0, 1.0));
+		gTranslate(0, -5, 1);
+		gPush(); // ground box CS
+		{
+			gPush(); // ground box CS
+			{
+				gScale(6, 1, 1);
+				setColor(vec4(0, 0, 0, 1.0));
+				// draw ground box
+				drawCube();
+			}
+			gPop(); // ground box object -> CS, M = T(0,-5,0)
 
-		// TODO not tied to cubeRotation
-		leftSeaweedRotation[1] = 2*Math.cos(cubeRotation[1]/23);
-		gTranslate(leftSeaweedBase[0], leftSeaweedBase[1], leftSeaweedBase[2]);
-		gRotate(leftSeaweedRotation[1], 0, 0, 1);
+			gTranslate(-0.8, 1.25, 0);
+			gPush(); // rock 1 CS
+			{
+				setColor(vec4(0.5, 0.5, 0.5, 1.0));
+				gScale(0.25, 0.25, 1);
+
+				// draw rock 1
+				drawSphere();
+			}
+			gPop(); // rock 1 object -> CS, M = T(0,-5,0)T(0,1.5,0)
+		}	
+		gPop();	// Rock1CS -> groundboxCS, M = T(0,-5,0)
+		
+		gPush(); // Ground box CS
+		{
+			gTranslate(0, 1.5, 0);
+			gPush(); // rock 2 CS
+			{
+				setColor(vec4(0.5, 0.5, 0.5, 1.0));
+				gScale(0.5, 0.5, 1);
+				drawSphere();
+			}
+			gPop(); // rock 2 object -> CS
+
+			gPush(); // rock 2 CS
+			{
+				leftSeaweedRotation[1] = 7 * Math.cos(time[1] / 20);
+				
+				gTranslate(-0.4, 0.34, 0);
+				gRotate(leftSeaweedRotation[1], 0, 0, 1);
+				gPush(); // first seaweed section
+				{
+					gTranslate(0, 0.25, 0);
+					gScale(0.1, 0.25, 1);
+					setColor(vec4(0.0, 1.0, 0.0, 1.0));
+					drawSphere();
+				}
+				gPop(); // first seaweed object -> CS
+				
+				for(let j = 0; j < 9; j++)
+				{
+					gTranslate(0, 0.5, 0);
+					gRotate(leftSeaweedRotation[1], 0, 0, 1);
+					gPush(); // seaweed section
+					{
+						gTranslate(0, 0.25, 0);
+						gScale(0.1, 0.25, 1);
+						setColor(vec4(0.0, 1.0, 0.0, 1.0));
+						drawSphere();
+					}
+					gPop(); // seaweed object -> CS
+				}
+			}
+			gPop(); // back to rock2 CS
+			
+			gPush();
+			{
+				centreSeaweedRotation[1] = 7 * Math.cos(time[1] / 20);
+				gTranslate(0, 0.5, 0);
+				gRotate(leftSeaweedRotation[1], 0, 0, 1);
+				gPush(); // centre first seaweed section
+				{
+					gTranslate(0, 0.25, 0);
+					gScale(0.1, 0.25, 1);
+					setColor(vec4(0.0, 1.0, 0.0, 1.0));
+					drawSphere();
+				}
+				gPop(); // C1S object -> CS
+
+				for(let k = 0; k < 9; k++)
+				{
+					gTranslate(0, 0.5, 0);
+					gRotate(leftSeaweedRotation[1], 0, 0, 1);
+					gPush(); // seaweed section
+					{
+						gTranslate(0, 0.25, 0);
+						gScale(0.1, 0.25, 1);
+						setColor(vec4(0.0, 1.0, 0.0, 1.0));
+						drawSphere();
+					}
+					gPop(); // seaweed object -> CS
+				}
+			}
+			gPop();	// back to rock 1 CS
+
+			gPush(); // rock 2 CS
+			{
+				leftSeaweedRotation[1] = 7 * Math.cos(time[1] / 20);
+
+				gTranslate(0.4, 0.34, 0);
+				gRotate(leftSeaweedRotation[1], 0, 0, 1);
+				gPush(); // first seaweed section
+				{
+					gTranslate(0, 0.25, 0);
+					gScale(0.1, 0.25, 1);
+					setColor(vec4(0.0, 1.0, 0.0, 1.0));
+					drawSphere();
+				}
+				gPop(); // first seaweed object -> CS
+
+				for(let l = 0; l < 9; l++)
+				{
+					gTranslate(0, 0.5, 0);
+					gRotate(leftSeaweedRotation[1], 0, 0, 1);
+					gPush(); // seaweed section
+					{
+						gTranslate(0, 0.25, 0);
+						gScale(0.1, 0.25, 1);
+						setColor(vec4(0.0, 1.0, 0.0, 1.0));
+						drawSphere();
+					}
+					gPop(); // seaweed object -> CS
+				}
+			}
+			gPop(); // back to rock2 CS
+			
+			gPush();
+			{
+				// TODO draw fish here
+			}
+			gPop(); // back to rock2 CS
+		}
+		gPop(); // back to ground box CS
+		
 		gPush();
 		{
-			// draw the first section
-			gTranslate(0, 0.3, 0);
-			gScale(0.1, 0.3, 1);
-			drawSphere();
+			gTranslate(3, 6, 0);
+			gRotate(-30, 0, 1, 0);
+			gTranslate(0.6*Math.cos(time[1]/35), 0.6*Math.cos(time[1]/35), 0);
+			gPush(); // diver CS
+			{
+				gPush(); // diver CS
+				{
+					setColor(vec4(0.7, 0.45, 0.9, 1.0));
+					gScale(0.5, 0.8, 0.4);
+					drawCube()
+				}
+				gPop(); // diver body object -> diver CS
+
+				/* Draw Left Leg */
+				gPush(); // diver CS
+				{
+					gTranslate(-0.3, -0.8, 0);
+					gRotate(15*Math.cos(time[1]/30) + 20, 1, 0, 0);
+					gPush(); // left thigh CS
+					{
+						gTranslate(0, -0.5, 0);
+						gScale(0.15, 0.5, 0.15);
+						drawCube();
+					}
+					gPop(); // left thigh object -> CS
+
+					gTranslate(0, -1, 0);
+					gRotate(15*Math.cos(time[1]/30) + 20, 1, 0, 0);
+					gPush(); // left calf CS
+					{
+						gTranslate(0, -0.5, 0);
+						gScale(0.15, 0.5, 0.15);
+						drawCube();
+					}
+					gPop(); // left calf object -> CS
+
+					gTranslate(0, -1, 0);
+					gRotate(15*Math.cos(time[1]/30) + 20, 1, 0, 0);
+					gPush(); // left foot CS
+					{
+						gTranslate(0, 0, 0.15);
+						gScale(0.15, 0.1, 0.4);
+						drawCube();
+					}
+					gPop(); // left foot object -> CS
+				}
+				gPop(); // back to diver CS
+
+				/* Draw Right Leg */
+				gPush(); // diver CS
+				{
+					gTranslate(0.3, -0.8, 0);
+					gRotate(15*Math.sin(time[1]/30) + 20, 1, 0, 0);
+					gPush(); // left thigh CS
+					{
+						gTranslate(0, -0.5, 0);
+						gScale(0.15, 0.5, 0.15);
+						drawCube();
+					}
+					gPop(); // left thigh object -> CS
+
+					gTranslate(0, -1, 0);
+					gRotate(15*Math.sin(time[1]/30) + 20, 1, 0, 0);
+					gPush(); // left calf CS
+					{
+						gTranslate(0, -0.5, 0);
+						gScale(0.15, 0.5, 0.15);
+						drawCube();
+					}
+					gPop(); // left calf object -> CS
+
+					gTranslate(0, -1, 0);
+					gRotate(15*Math.sin(time[1]/30) + 20, 1, 0, 0);
+					gPush(); // left foot CS
+					{
+						gTranslate(0, 0, 0.15);
+						gScale(0.15, 0.1, 0.4);
+						drawCube();
+					}
+					gPop(); // left foot object -> CS
+				}
+				gPop(); // back to diver CS
+				
+				gTranslate(0, 0.8, 0);
+				gPush(); // head CS
+				{
+					gTranslate(0, 0.3, 0);
+					gScale(0.3, 0.3, 0.3);
+					drawSphere();
+				}
+				gPop(); // head object -> CS
+			}
+			gPop(); // back to diver CS
 		}
-		gPop();
-		// now add the 'knuckle'
-		// this is the location of the knuckle
-		gTranslate(0, 0.6, 0);
-		gRotate(leftSeaweedRotation[1], 0, 0, 1);
-		gPush();
-		{
-			gTranslate(0, 0.3, 0);
-			gScale(0.1, 0.3, 1);
-			drawSphere();
-		}
-		gPop();
-		gTranslate(0, 0.6, 0);
-		gRotate(leftSeaweedRotation[1] , 0, 0, 1);
-		gPush();
-		{
-			gTranslate(0, 0.3, 0);
-			gScale(0.1, 0.3, 1);
-			drawSphere();
-		}
-		gPop();
-		gTranslate(0, 0.6, 0);
-		gRotate(leftSeaweedRotation[1] , 0, 0, 1);
-		gPush();
-		{
-			gTranslate(0, 0.3, 0);
-			gScale(0.1, 0.3, 1);
-			drawSphere();
-		}
-		gPop();
-		gTranslate(0, 0.6, 0);
-		gRotate(leftSeaweedRotation[1] , 0, 0, 1);
-		gPush();
-		{
-			gTranslate(0, 0.3, 0);
-			gScale(0.1, 0.3, 1);
-			drawSphere();
-		}
-		gPop();
-		gTranslate(0, 0.6, 0);
-		gRotate(leftSeaweedRotation[1] , 0, 0, 1);
-		gPush();
-		{
-			gTranslate(0, 0.3, 0);
-			gScale(0.1, 0.3, 1);
-			drawSphere();
-		}
-		gPop();
-		gTranslate(0, 0.6, 0);
-		gRotate(leftSeaweedRotation[1] , 0, 0, 1);
-		gPush();
-		{
-			gTranslate(0, 0.3, 0);
-			gScale(0.1, 0.3, 1);
-			drawSphere();
-		}
-		gPop();
-		gTranslate(0, 0.6, 0);
-		gRotate(leftSeaweedRotation[1] , 0, 0, 1);
-		gPush();
-		{
-			gTranslate(0, 0.3, 0);
-			gScale(0.1, 0.3, 1);
-			drawSphere();
-		}
-		gPop();
-		gTranslate(0, 0.6, 0);
-		gRotate(leftSeaweedRotation[1] , 0, 0, 1);
-		gPush();
-		{
-			gTranslate(0, 0.3, 0);
-			gScale(0.1, 0.3, 1);
-			drawSphere();
-		}
-		gPop();
-		gTranslate(0, 0.6, 0);
-		gRotate(leftSeaweedRotation[1] , 0, 0, 1);
-		gPush();
-		{
-			gTranslate(0, 0.3, 0);
-			gScale(0.1, 0.3, 1);
-			drawSphere();
-		}
-		gPop();
+		gPop(); // back to box CS
 	}
-	gPop();
-	// done with left seaweed
-
-	// centre seaweed
-	gPush();
-	{
-		setColor(vec4(0.0, 1.0, 0.0, 1.0));
-
-		// TODO not tied to cubeRotation
-		centreSeaweedRotation[1] = 2*Math.cos(cubeRotation[1]/23);
-		gTranslate(centreSeaweedBase[0], centreSeaweedBase[1], centreSeaweedBase[2]);
-		gRotate(centreSeaweedRotation[1], 0, 0, 1);
-		gPush();
-		{
-			// draw the first section
-			gTranslate(0, 0.3, 0);
-			gScale(0.1, 0.3, 1);
-			drawSphere();
-		}
-		gPop();
-		// now add the 'knuckle'
-		// this is the location of the knuckle
-		gTranslate(0, 0.6, 0);
-		gRotate(centreSeaweedRotation[1], 0, 0, 1);
-		gPush();
-		{
-			gTranslate(0, 0.3, 0);
-			gScale(0.1, 0.3, 1);
-			drawSphere();
-		}
-		gPop();
-		gTranslate(0, 0.6, 0);
-		gRotate(centreSeaweedRotation[1] , 0, 0, 1);
-		gPush();
-		{
-			gTranslate(0, 0.3, 0);
-			gScale(0.1, 0.3, 1);
-			drawSphere();
-		}
-		gPop();
-		gTranslate(0, 0.6, 0);
-		gRotate(centreSeaweedRotation[1] , 0, 0, 1);
-		gPush();
-		{
-			gTranslate(0, 0.3, 0);
-			gScale(0.1, 0.3, 1);
-			drawSphere();
-		}
-		gPop();
-		gTranslate(0, 0.6, 0);
-		gRotate(centreSeaweedRotation[1] , 0, 0, 1);
-		gPush();
-		{
-			gTranslate(0, 0.3, 0);
-			gScale(0.1, 0.3, 1);
-			drawSphere();
-		}
-		gPop();
-		gTranslate(0, 0.6, 0);
-		gRotate(centreSeaweedRotation[1] , 0, 0, 1);
-		gPush();
-		{
-			gTranslate(0, 0.3, 0);
-			gScale(0.1, 0.3, 1);
-			drawSphere();
-		}
-		gPop();
-		gTranslate(0, 0.6, 0);
-		gRotate(centreSeaweedRotation[1] , 0, 0, 1);
-		gPush();
-		{
-			gTranslate(0, 0.3, 0);
-			gScale(0.1, 0.3, 1);
-			drawSphere();
-		}
-		gPop();
-		gTranslate(0, 0.6, 0);
-		gRotate(centreSeaweedRotation[1] , 0, 0, 1);
-		gPush();
-		{
-			gTranslate(0, 0.3, 0);
-			gScale(0.1, 0.3, 1);
-			drawSphere();
-		}
-		gPop();
-		gTranslate(0, 0.6, 0);
-		gRotate(centreSeaweedRotation[1] , 0, 0, 1);
-		gPush();
-		{
-			gTranslate(0, 0.3, 0);
-			gScale(0.1, 0.3, 1);
-			drawSphere();
-		}
-		gPop();
-		gTranslate(0, 0.6, 0);
-		gRotate(centreSeaweedRotation[1] , 0, 0, 1);
-		gPush();
-		{
-			gTranslate(0, 0.3, 0);
-			gScale(0.1, 0.3, 1);
-			drawSphere();
-		}
-		gPop();
-	}
-	gPop();
-	// done with centre seaweed
-
-	// centre seaweed
-	gPush();
-	{
-		setColor(vec4(0.0, 1.0, 0.0, 1.0));
-
-		// TODO not tied to cubeRotation
-		rightSeaweedRotation[1] = 2*Math.cos(cubeRotation[1]/23);
-		gTranslate(rightSeaweedBase[0], rightSeaweedBase[1], rightSeaweedBase[2]);
-		gRotate(rightSeaweedRotation[1], 0, 0, 1);
-		gPush();
-		{
-			// draw the first section
-			gTranslate(0, 0.3, 0);
-			gScale(0.1, 0.3, 1);
-			drawSphere();
-		}
-		gPop();
-		// now add the 'knuckle'
-		// this is the location of the knuckle
-		gTranslate(0, 0.6, 0);
-		gRotate(rightSeaweedRotation[1], 0, 0, 1);
-		gPush();
-		{
-			gTranslate(0, 0.3, 0);
-			gScale(0.1, 0.3, 1);
-			drawSphere();
-		}
-		gPop();
-		gTranslate(0, 0.6, 0);
-		gRotate(rightSeaweedRotation[1] , 0, 0, 1);
-		gPush();
-		{
-			gTranslate(0, 0.3, 0);
-			gScale(0.1, 0.3, 1);
-			drawSphere();
-		}
-		gPop();
-		gTranslate(0, 0.6, 0);
-		gRotate(rightSeaweedRotation[1] , 0, 0, 1);
-		gPush();
-		{
-			gTranslate(0, 0.3, 0);
-			gScale(0.1, 0.3, 1);
-			drawSphere();
-		}
-		gPop();
-		gTranslate(0, 0.6, 0);
-		gRotate(rightSeaweedRotation[1] , 0, 0, 1);
-		gPush();
-		{
-			gTranslate(0, 0.3, 0);
-			gScale(0.1, 0.3, 1);
-			drawSphere();
-		}
-		gPop();
-		gTranslate(0, 0.6, 0);
-		gRotate(rightSeaweedRotation[1] , 0, 0, 1);
-		gPush();
-		{
-			gTranslate(0, 0.3, 0);
-			gScale(0.1, 0.3, 1);
-			drawSphere();
-		}
-		gPop();
-		gTranslate(0, 0.6, 0);
-		gRotate(rightSeaweedRotation[1] , 0, 0, 1);
-		gPush();
-		{
-			gTranslate(0, 0.3, 0);
-			gScale(0.1, 0.3, 1);
-			drawSphere();
-		}
-		gPop();
-		gTranslate(0, 0.6, 0);
-		gRotate(rightSeaweedRotation[1] , 0, 0, 1);
-		gPush();
-		{
-			gTranslate(0, 0.3, 0);
-			gScale(0.1, 0.3, 1);
-			drawSphere();
-		}
-		gPop();
-		gTranslate(0, 0.6, 0);
-		gRotate(rightSeaweedRotation[1] , 0, 0, 1);
-		gPush();
-		{
-			gTranslate(0, 0.3, 0);
-			gScale(0.1, 0.3, 1);
-			drawSphere();
-		}
-		gPop();
-		gTranslate(0, 0.6, 0);
-		gRotate(rightSeaweedRotation[1] , 0, 0, 1);
-		gPush();
-		{
-			gTranslate(0, 0.3, 0);
-			gScale(0.1, 0.3, 1);
-			drawSphere();
-		}
-		gPop();
-	}
-	gPop();
-	// done with right seaweed
-	
-	
-    
-	// Cube example
-	gPush();
-		gTranslate(cubePosition[0],cubePosition[1],cubePosition[2]);
-		gPush();
-		{
-			setColor(vec4(0.0,1.0,0.0,1.0));
-			// Here is an example of integration to rotate the cube around the y axis at 30 degrees per second
-			// new cube rotation around y = current cube rotation around y + 30deg/s*dt
-			//console.log(cubeRotation[1] + "->" +  cubeRotation[1] + 30*dt);
-			console.log(dt);
-			cubeRotation[1] = cubeRotation[1] + 30*dt;
-			// This calls a simple helper function to apply the rotation (theta, x, y, z), 
-			// where x,y,z define the axis of rotation. Here is is the y axis, (0,1,0).
-			gRotate(cubeRotation[1],0,1,0);
-			drawCube();
-		}
-		gPop();
-	gPop();
-    
-	// Cylinder example
-	gPush();
-		gTranslate(cylinderPosition[0],cylinderPosition[1],cylinderPosition[2]);
-		gPush();
-		{
-			setColor(vec4(0.0,0.0,1.0,1.0));
-			cylinderRotation[1] = cylinderRotation[1] + 60*dt;
-			gRotate(cylinderRotation[1],0,1,0);
-			drawCylinder();
-		}
-		gPop();
-	gPop();	
-    
-	// Cone example
-	gPush();
-		gTranslate(conePosition[0],conePosition[1],conePosition[2]);
-		gPush();
-		{
-			setColor(vec4(1.0,1.0,0.0,1.0));
-			coneRotation[1] = coneRotation[1] + 90*dt;
-			gRotate(coneRotation[1],0,1,0);
-			drawCone();
-		}
-		gPop();
-	gPop();
+	gPop(); // box CS -> world CS
     
     if( animFlag )
         window.requestAnimFrame(render);
