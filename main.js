@@ -418,9 +418,98 @@ function render(timestamp)
 			}
 			gPop(); // back to rock2 CS
 			
-			gPush();
+			/* Fish time */
+			gPush(); 
 			{
-				// TODO draw fish here
+				gRotate(-time[1] , 0, 1, 0);
+				gTranslate(3, 0.75, 1);
+				gTranslate(0, 0.5* Math.cos(time[1] / 19), 0);
+				gPush(); 
+				{
+					gRotate(180, 1, 0, 0);
+					gScale(0.5, 0.5, 2);
+					setColor(vec4(1.0, 0.0, 0.0, 1.0));
+					drawCone();
+				}
+				gPop(); // back to fish CS
+				
+				gPush(); // fish CS
+				{
+					gTranslate(0, 0, -1);
+					var tailRotation = 30 * Math.cos(time[1] / 6 );
+					
+					gRotate(tailRotation, 0, 1, 0);
+					gPush();
+					{
+						gRotate(30, 1, 0, 0);
+						gTranslate(0, 0, -0.5);
+						gScale(0.2, 0.2, 1);
+						gRotate(180, 1, 0, 0);
+						drawCone();
+					}
+					gPop(); // back to tail CS
+
+					gPush();
+					{
+						gRotate(-30, 1, 0, 0);
+						gTranslate(0, 0, -0.5);
+						gScale(0.2, 0.2, 1);
+						gRotate(180, 1, 0, 0);
+						drawCone();
+					}
+					gPop(); // back to tail CS
+				}
+				gPop();// back to fish CS
+				
+				gPush(); // fish CS
+				{
+					gTranslate(0, 0, 1);
+					gPush(); // fish head CS
+					{
+						gTranslate(0, 0, 0.25);
+						gScale(0.5, 0.5, 0.5);
+						setColor(vec4(0.5, 0.5, 0.5, 1.0));
+						drawCone();
+					}
+					gPop(); // fish head object -> CS
+					
+					gPush(); // fish head
+					{
+						gTranslate(0.3, 0.2, 0.25);
+						gPush(); // eye CS
+						{
+							gScale(0.1, 0.1, 0.1);
+							setColor(vec4(1, 1, 1, 1.0));
+							drawSphere();
+						}
+						gPop(); // back to eye CS
+						
+						gTranslate(0, 0, 0.1);
+						gScale(0.05, 0.05, 0.05);
+						setColor(vec4(0, 0, 0, 1.0));
+						drawSphere();
+					}
+					gPop(); // back to fish head CS
+
+					gPush(); // fish head CS
+					{
+						gTranslate(-0.3, 0.2, 0.25);
+						gPush(); // eye CS
+						{
+							gScale(0.1, 0.1, 0.1);
+							setColor(vec4(1, 1, 1, 1.0));
+							drawSphere();
+						}
+						gPop(); // back to eye CS
+						
+						gTranslate(0, 0, 0.1);
+						gScale(0.05, 0.05, 0.05);
+						setColor(vec4(0, 0, 0, 1.0));
+						drawSphere();
+					}
+					gPop(); // back to fish head CS
+				}
+				gPop(); // back to fish CS
 			}
 			gPop(); // back to rock2 CS
 		}
