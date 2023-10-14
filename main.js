@@ -77,6 +77,7 @@ var centreSeaweedBase = [-0, -4, 0];
 var centreSeaweedRotation = [0,0,0];
 var rightSeaweedBase = [0.8, -4.5, 0];
 var rightSeaweedRotation = [0,0,0];
+var bubbleLocations = [];
 
 // Setting the colour which is needed during illumination of a surface
 function setColor(c)
@@ -328,15 +329,18 @@ function render(timestamp)
 
 			gPush(); // rock 2 CS
 			{
-				leftSeaweedRotation[1] = 7 * Math.cos(time[1] / 20);
+				leftSeaweedRotation[1] = 10 * Math.cos(0.002 * timestamp);
+				let phaseShift = 100;
 				
 				gTranslate(-0.4, 0.34, 0);
 				gRotate(leftSeaweedRotation[1], 0, 0, 1);
+				leftSeaweedRotation[1] = 7 * Math.cos(0.002 * timestamp + phaseShift);
+				phaseShift += 100;
 				gPush(); // first seaweed section
 				{
 					gTranslate(0, 0.25, 0);
-					gScale(0.1, 0.25, 1);
-					setColor(vec4(0.0, 1.0, 0.0, 1.0));
+					gScale(0.1, 0.25, 0.1);
+					setColor(vec4(0.0, 0.5, 0.0, 1.0));
 					drawSphere();
 				}
 				gPop(); // first seaweed object -> CS
@@ -345,11 +349,13 @@ function render(timestamp)
 				{
 					gTranslate(0, 0.5, 0);
 					gRotate(leftSeaweedRotation[1], 0, 0, 1);
+					leftSeaweedRotation[1] = 7 * Math.cos(0.002 * timestamp + phaseShift);
+					phaseShift += 100;
 					gPush(); // seaweed section
 					{
 						gTranslate(0, 0.25, 0);
-						gScale(0.1, 0.25, 1);
-						setColor(vec4(0.0, 1.0, 0.0, 1.0));
+						gScale(0.1, 0.25, 0.1);
+						setColor(vec4(0.0, 0.5, 0.0, 1.0));
 						drawSphere();
 					}
 					gPop(); // seaweed object -> CS
@@ -359,14 +365,18 @@ function render(timestamp)
 			
 			gPush();
 			{
-				centreSeaweedRotation[1] = 7 * Math.cos(time[1] / 20);
+				centreSeaweedRotation[1] = 10 * Math.cos(0.002* timestamp);
+				let phaseShift = 100;
+
 				gTranslate(0, 0.5, 0);
-				gRotate(leftSeaweedRotation[1], 0, 0, 1);
+				gRotate(centreSeaweedRotation[1], 0, 0, 1);
+				centreSeaweedRotation[1] = 7 * Math.cos(0.002 * timestamp + phaseShift);
+				phaseShift += 100;
 				gPush(); // centre first seaweed section
 				{
 					gTranslate(0, 0.25, 0);
-					gScale(0.1, 0.25, 1);
-					setColor(vec4(0.0, 1.0, 0.0, 1.0));
+					gScale(0.1, 0.25, 0.1);
+					setColor(vec4(0.0, 0.5, 0.0, 1.0));
 					drawSphere();
 				}
 				gPop(); // C1S object -> CS
@@ -374,12 +384,14 @@ function render(timestamp)
 				for(let k = 0; k < 9; k++)
 				{
 					gTranslate(0, 0.5, 0);
-					gRotate(leftSeaweedRotation[1], 0, 0, 1);
+					gRotate(centreSeaweedRotation[1], 0, 0, 1);
+					centreSeaweedRotation[1] = 7 * Math.cos(0.002 * timestamp + phaseShift);
+					phaseShift += 100;
 					gPush(); // seaweed section
 					{
 						gTranslate(0, 0.25, 0);
-						gScale(0.1, 0.25, 1);
-						setColor(vec4(0.0, 1.0, 0.0, 1.0));
+						gScale(0.1, 0.25, 0.1);
+						setColor(vec4(0.0, 0.5, 0.0, 1.0));
 						drawSphere();
 					}
 					gPop(); // seaweed object -> CS
@@ -389,15 +401,19 @@ function render(timestamp)
 
 			gPush(); // rock 2 CS
 			{
-				leftSeaweedRotation[1] = 7 * Math.cos(time[1] / 20);
-
+				rightSeaweedRotation[1] = 10 * Math.cos(0.002 * timestamp);
+				let phaseShift = 100;
+				
+				
 				gTranslate(0.4, 0.34, 0);
-				gRotate(leftSeaweedRotation[1], 0, 0, 1);
+				gRotate(rightSeaweedRotation[1], 0, 0, 1);
+				rightSeaweedRotation[1] = 7 * Math.cos(0.002 * timestamp + phaseShift);
+				phaseShift += 100;
 				gPush(); // first seaweed section
 				{
 					gTranslate(0, 0.25, 0);
-					gScale(0.1, 0.25, 1);
-					setColor(vec4(0.0, 1.0, 0.0, 1.0));
+					gScale(0.1, 0.25, 0.1);
+					setColor(vec4(0.0, 0.5, 0.0, 1));
 					drawSphere();
 				}
 				gPop(); // first seaweed object -> CS
@@ -405,16 +421,19 @@ function render(timestamp)
 				for(let l = 0; l < 9; l++)
 				{
 					gTranslate(0, 0.5, 0);
-					gRotate(leftSeaweedRotation[1], 0, 0, 1);
+					gRotate(rightSeaweedRotation[1], 0, 0, 1);
+					rightSeaweedRotation[1] = 7 * Math.cos(0.002 * timestamp + phaseShift);
+					phaseShift += 100;
 					gPush(); // seaweed section
 					{
 						gTranslate(0, 0.25, 0);
-						gScale(0.1, 0.25, 1);
-						setColor(vec4(0.0, 1.0, 0.0, 1.0));
+						gScale(0.1, 0.25, 0.1);
+						setColor(vec4(0.0, 0.5, 0.0, 1));
 						drawSphere();
 					}
 					gPop(); // seaweed object -> CS
 				}
+
 			}
 			gPop(); // back to rock2 CS
 			
@@ -606,6 +625,9 @@ function render(timestamp)
 					gTranslate(0, 0.3, 0);
 					gScale(0.3, 0.3, 0.3);
 					drawSphere();
+					
+					// TODO bubbles here
+					
 				}
 				gPop(); // head object -> CS
 			}
