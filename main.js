@@ -13,6 +13,9 @@ var right = 6.0;
 var ytop =6.0;
 var bottom = -6.0;
 
+var timeSinceLastBubble = 0;
+var nextBubble = 0;
+
 
 var lightPosition2 = vec4(100.0, 100.0, 100.0, 1.0 );
 var lightPosition = vec4(0.0, 0.0, 100.0, 1.0 );
@@ -49,24 +52,13 @@ var controller;
 // These are used to store the current state of objects.
 // In animation it is often useful to think of an object as having some DOF
 // Then the animation is simply evolving those DOF over time.
-var sphereRotation = [0,0,0];
-var spherePosition = [-4,0,0];
 
-var cubeRotation = [0,0,0];
-var cubePosition = [-1,0,0];
-
-var cylinderRotation = [0,0,0];
-var cylinderPosition = [1.1,0,0];
-
-var coneRotation = [0,0,0];
-var conePosition = [0,0,0];
-
-var time = [0, 0, 0];
+var time = [0, 0, 0]; // TODO remove
 
 
 /* OBJECT POSITIONS
  */
-
+ // TODO update
 var rock1Position = [0, -5, 0];
 
 var rock2Position = [-1.5, -5.5, 0];
@@ -250,11 +242,38 @@ function gPush() {
     MS.push(modelMatrix);
 }
 
+function drawSeaweed(timestamp)
+{
+	let phaseShift = 0;
+	gPush(); // first seaweed section
+	{
+		gTranslate(0, 0.25, 0);
+		gScale(0.1, 0.25, 0.1);
+		setColor(vec4(0.0, 0.5, 0.0, 1.0));
+		drawSphere();
+	}
+	gPop(); // first seaweed object -> CS
+
+	for(let j = 0; j < 9; j++)
+	{
+		gTranslate(0, 0.5, 0);
+		phaseShift -= 55;
+		leftSeaweedRotation[0] = 16 * Math.cos(0.02 * (timestamp / 25  + phaseShift));
+		gRotate(leftSeaweedRotation[0], 0, 0, 1);
+		gPush(); // seaweed section
+		{
+			gTranslate(0, 0.25, 0);
+			gScale(0.1, 0.25, 0.1);
+			setColor(vec4(0.0, 0.5, 0.0, 1.0));
+			drawSphere();
+		}
+		gPop(); // seaweed object -> CS
+	}
+}
+
 
 function render(timestamp) 
 {
-    
-    let i;
 	gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     
     eye = vec3(0,0,10);
@@ -280,169 +299,76 @@ function render(timestamp)
 		// To get the new position of a thing we do something called integration
 		// the simpelst form of this looks like:
 		// x_new = x + v*dt
-		// That is the new position equals the current position + the rate of of change of that position (often a velocity or speed), times the change in time
+		// That is the new position equals the current position + the rate of change of that position (often a velocity or speed), times the change in time
 		// We can do this with angles or positions, the whole x,y,z position or just one dimension. It is up to us!
 		dt = (timestamp - prevTime) / 1000.0;
 		prevTime = timestamp;
 	}
 
-	time[1] = time[1] + 30*dt;
-	
 	// Ground box
 	gPush();
 	{
-		gTranslate(0, -5, 1);
-		gPush(); // ground box CS
+		gTranslate(0, -5, 0);
+		gPush(); // ground box
 		{
-			gPush(); // ground box CS
+			gPush();
 			{
-				gScale(6, 1, 1);
-				setColor(vec4(0, 0, 0, 1.0));
-				// draw ground box
+				gScale(6, 1, 6);
+				setColor(vec4(0.1, 0.1, 0.1, 1.0));
 				drawCube();
 			}
-			gPop(); // ground box object -> CS, M = T(0,-5,0)
+			gPop();
 
 			gTranslate(-0.8, 1.25, 0);
 			gPush(); // rock 1 CS
 			{
 				setColor(vec4(0.5, 0.5, 0.5, 1.0));
-				gScale(0.25, 0.25, 1);
-
-				// draw rock 1
+				gScale(0.25, 0.25, 0.25);
+				
 				drawSphere();
 			}
-			gPop(); // rock 1 object -> CS, M = T(0,-5,0)T(0,1.5,0)
+			gPop(); // rock 1
 		}	
-		gPop();	// Rock1CS -> groundboxCS, M = T(0,-5,0)
+		gPop();	// ground box
 		
-		gPush(); // Ground box CS
+		gPush(); // ground box
 		{
 			gTranslate(0, 1.5, 0);
-			gPush(); // rock 2 CS
+			gPush(); // rock 2
 			{
 				setColor(vec4(0.5, 0.5, 0.5, 1.0));
-				gScale(0.5, 0.5, 1);
+				gScale(0.5, 0.5, 0.5);
 				drawSphere();
 			}
-			gPop(); // rock 2 object -> CS
+			gPop(); // rock 2
 
-			gPush(); // rock 2 CS
+			gPush(); // left seaweed
 			{
-				leftSeaweedRotation[1] = 10 * Math.cos(0.002 * timestamp);
-				let phaseShift = 100;
-				
-				gTranslate(-0.4, 0.34, 0);
-				gRotate(leftSeaweedRotation[1], 0, 0, 1);
-				leftSeaweedRotation[1] = 7 * Math.cos(0.002 * timestamp + phaseShift);
-				phaseShift += 100;
-				gPush(); // first seaweed section
-				{
-					gTranslate(0, 0.25, 0);
-					gScale(0.1, 0.25, 0.1);
-					setColor(vec4(0.0, 0.5, 0.0, 1.0));
-					drawSphere();
-				}
-				gPop(); // first seaweed object -> CS
-				
-				for(let j = 0; j < 9; j++)
-				{
-					gTranslate(0, 0.5, 0);
-					gRotate(leftSeaweedRotation[1], 0, 0, 1);
-					leftSeaweedRotation[1] = 7 * Math.cos(0.002 * timestamp + phaseShift);
-					phaseShift += 100;
-					gPush(); // seaweed section
-					{
-						gTranslate(0, 0.25, 0);
-						gScale(0.1, 0.25, 0.1);
-						setColor(vec4(0.0, 0.5, 0.0, 1.0));
-						drawSphere();
-					}
-					gPop(); // seaweed object -> CS
-				}
+				gTranslate(-0.5, 0, 0);
+				drawSeaweed(timestamp);
 			}
-			gPop(); // back to rock2 CS
+			gPop(); // left seaweed
 			
-			gPush();
+			gPush(); // centre seaweed
 			{
-				centreSeaweedRotation[1] = 10 * Math.cos(0.002* timestamp);
-				let phaseShift = 100;
-
 				gTranslate(0, 0.5, 0);
-				gRotate(centreSeaweedRotation[1], 0, 0, 1);
-				centreSeaweedRotation[1] = 7 * Math.cos(0.002 * timestamp + phaseShift);
-				phaseShift += 100;
-				gPush(); // centre first seaweed section
-				{
-					gTranslate(0, 0.25, 0);
-					gScale(0.1, 0.25, 0.1);
-					setColor(vec4(0.0, 0.5, 0.0, 1.0));
-					drawSphere();
-				}
-				gPop(); // C1S object -> CS
-
-				for(let k = 0; k < 9; k++)
-				{
-					gTranslate(0, 0.5, 0);
-					gRotate(centreSeaweedRotation[1], 0, 0, 1);
-					centreSeaweedRotation[1] = 7 * Math.cos(0.002 * timestamp + phaseShift);
-					phaseShift += 100;
-					gPush(); // seaweed section
-					{
-						gTranslate(0, 0.25, 0);
-						gScale(0.1, 0.25, 0.1);
-						setColor(vec4(0.0, 0.5, 0.0, 1.0));
-						drawSphere();
-					}
-					gPop(); // seaweed object -> CS
-				}
+				drawSeaweed(timestamp);
 			}
-			gPop();	// back to rock 1 CS
-
+			gPop();	// c
+			
 			gPush(); // rock 2 CS
 			{
-				rightSeaweedRotation[1] = 10 * Math.cos(0.002 * timestamp);
-				let phaseShift = 100;
-				
-				
-				gTranslate(0.4, 0.34, 0);
-				gRotate(rightSeaweedRotation[1], 0, 0, 1);
-				rightSeaweedRotation[1] = 7 * Math.cos(0.002 * timestamp + phaseShift);
-				phaseShift += 100;
-				gPush(); // first seaweed section
-				{
-					gTranslate(0, 0.25, 0);
-					gScale(0.1, 0.25, 0.1);
-					setColor(vec4(0.0, 0.5, 0.0, 1));
-					drawSphere();
-				}
-				gPop(); // first seaweed object -> CS
-
-				for(let l = 0; l < 9; l++)
-				{
-					gTranslate(0, 0.5, 0);
-					gRotate(rightSeaweedRotation[1], 0, 0, 1);
-					rightSeaweedRotation[1] = 7 * Math.cos(0.002 * timestamp + phaseShift);
-					phaseShift += 100;
-					gPush(); // seaweed section
-					{
-						gTranslate(0, 0.25, 0);
-						gScale(0.1, 0.25, 0.1);
-						setColor(vec4(0.0, 0.5, 0.0, 1));
-						drawSphere();
-					}
-					gPop(); // seaweed object -> CS
-				}
-
+				gTranslate(0.5, 0, 0);
+				drawSeaweed(timestamp);
 			}
 			gPop(); // back to rock2 CS
 			
 			/* Fish time */
 			gPush(); 
 			{
-				gRotate(-time[1] , 0, 1, 0);
-				gTranslate(3, 0.75, 1);
-				gTranslate(0, 0.5* Math.cos(time[1] / 19), 0);
+				gRotate(-timestamp / 30, 0, 1, 0);
+				gTranslate(2.5, 0.9, 1);
+				gTranslate(0, 0.5 * Math.cos(timestamp / 570), 0);
 				gPush(); 
 				{
 					gRotate(180, 1, 0, 0);
@@ -455,7 +381,7 @@ function render(timestamp)
 				gPush(); // fish CS
 				{
 					gTranslate(0, 0, -1);
-					var tailRotation = 30 * Math.cos(time[1] / 6 );
+					var tailRotation = 30 * Math.cos(timestamp / 180 );
 					
 					gRotate(tailRotation, 0, 1, 0);
 					gPush();
@@ -536,15 +462,15 @@ function render(timestamp)
 		
 		gPush();
 		{
-			gTranslate(3, 6, 0);
+			gTranslate(4, 5, 0);
 			gRotate(-30, 0, 1, 0);
-			gTranslate(0.6*Math.cos(time[1]/35), 0.6*Math.cos(time[1]/35), 0);
+			gTranslate(0.6*Math.cos(timestamp/1000), 0.6*Math.cos(timestamp/1000), 0);
 			gPush(); // diver CS
 			{
 				gPush(); // diver CS
 				{
 					setColor(vec4(0.7, 0.45, 0.9, 1.0));
-					gScale(0.5, 0.8, 0.4);
+					gScale(0.5, 0.8, 0.3);
 					drawCube()
 				}
 				gPop(); // diver body object -> diver CS
@@ -553,31 +479,30 @@ function render(timestamp)
 				gPush(); // diver CS
 				{
 					gTranslate(-0.3, -0.8, 0);
-					gRotate(15*Math.cos(time[1]/30) + 20, 1, 0, 0);
+					gRotate(15*Math.cos(timestamp/900) + 40, 1, 0, 0);
 					gPush(); // left thigh CS
 					{
 						gTranslate(0, -0.5, 0);
-						gScale(0.15, 0.5, 0.15);
+						gScale(0.1, 0.5, 0.1);
 						drawCube();
 					}
 					gPop(); // left thigh object -> CS
 
 					gTranslate(0, -1, 0);
-					gRotate(15*Math.cos(time[1]/30) + 20, 1, 0, 0);
+					gRotate(15*Math.cos(timestamp/900) + 40, 1, 0, 0);
 					gPush(); // left calf CS
 					{
 						gTranslate(0, -0.5, 0);
-						gScale(0.15, 0.5, 0.15);
+						gScale(0.1, 0.5, 0.1);
 						drawCube();
 					}
 					gPop(); // left calf object -> CS
 
 					gTranslate(0, -1, 0);
-					gRotate(15*Math.cos(time[1]/30) + 20, 1, 0, 0);
 					gPush(); // left foot CS
 					{
 						gTranslate(0, 0, 0.15);
-						gScale(0.15, 0.1, 0.4);
+						gScale(0.1, 0.1, 0.4);
 						drawCube();
 					}
 					gPop(); // left foot object -> CS
@@ -588,31 +513,30 @@ function render(timestamp)
 				gPush(); // diver CS
 				{
 					gTranslate(0.3, -0.8, 0);
-					gRotate(15*Math.sin(time[1]/30) + 20, 1, 0, 0);
+					gRotate(15*Math.sin(timestamp/900) + 40, 1, 0, 0);
 					gPush(); // left thigh CS
 					{
 						gTranslate(0, -0.5, 0);
-						gScale(0.15, 0.5, 0.15);
+						gScale(0.1, 0.5, 0.1);
 						drawCube();
 					}
 					gPop(); // left thigh object -> CS
 
 					gTranslate(0, -1, 0);
-					gRotate(15*Math.sin(time[1]/30) + 20, 1, 0, 0);
+					gRotate(15*Math.sin(timestamp/900) + 40, 1, 0, 0);
 					gPush(); // left calf CS
 					{
 						gTranslate(0, -0.5, 0);
-						gScale(0.15, 0.5, 0.15);
+						gScale(0.1, 0.5, 0.1);
 						drawCube();
 					}
 					gPop(); // left calf object -> CS
 
 					gTranslate(0, -1, 0);
-					gRotate(15*Math.sin(time[1]/30) + 20, 1, 0, 0);
 					gPush(); // left foot CS
 					{
 						gTranslate(0, 0, 0.15);
-						gScale(0.15, 0.1, 0.4);
+						gScale(0.1, 0.1, 0.4);
 						drawCube();
 					}
 					gPop(); // left foot object -> CS
@@ -626,8 +550,24 @@ function render(timestamp)
 					gScale(0.3, 0.3, 0.3);
 					drawSphere();
 					
-					// TODO bubbles here
-					
+					// Obtain the local coordinates of the object
+					const localCoordinates = { x: 0, y: 0.3, z: 0 }; // Adjust as needed
+
+					// Apply the model-view matrix to transform to world coordinates
+					const worldCoordinates = {
+						x: modelViewMatrix[0][0] * localCoordinates.x + modelViewMatrix[0][1] * localCoordinates.y + modelViewMatrix[0][2] * localCoordinates.z + modelViewMatrix[0][3],
+						y: modelViewMatrix[1][0] * localCoordinates.x + modelViewMatrix[1][1] * localCoordinates.y + modelViewMatrix[1][2] * localCoordinates.z + modelViewMatrix[1][3],
+						z: modelViewMatrix[2][0] * localCoordinates.x + modelViewMatrix[2][1] * localCoordinates.y + modelViewMatrix[2][2] * localCoordinates.z + modelViewMatrix[2][3]
+					};
+
+					// Log the world coordinates
+					if(timeSinceLastBubble >= nextBubble)
+					{
+						bubbleLocations.push(worldCoordinates);
+						timeSinceLastBubble = 0;
+						nextBubble = Math.random() * 100;
+					}
+					timeSinceLastBubble += 1;
 				}
 				gPop(); // head object -> CS
 			}
@@ -636,7 +576,36 @@ function render(timestamp)
 		gPop(); // back to box CS
 	}
 	gPop(); // box CS -> world CS
-    
+	
+	gPush();
+	{
+		for(let i = 0; i < bubbleLocations.length; i++) 
+		{
+			gPush();
+			{
+				let x = bubbleLocations[i].x;
+				let y = bubbleLocations[i].y;
+				let z = bubbleLocations[i].z;
+
+				gTranslate(x, y, z + 16);
+				gScale(0.1, 0.1, 0.1);
+				gScale(0.1* Math.cos(timestamp/300) + 1 , 0.1*Math.sin(timestamp/300) + 1, 1, 0);
+
+				setColor(vec4(1.0, 1.0, 1.0, 1.0));
+				drawSphere();
+
+				bubbleLocations[i].y += 0.02;
+
+				if (bubbleLocations[i].y >= 10 || bubbleLocations[i].x >= 10)
+				{
+					bubbleLocations.splice(i, 1);
+				}
+			}
+			gPop();
+		}
+	}
+	gPop();
+
     if( animFlag )
         window.requestAnimFrame(render);
 }
