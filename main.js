@@ -568,22 +568,24 @@ function render(timestamp)
 					gTranslate(0, 0.3, 0);
 					gScale(0.3, 0.3, 0.3);
 					drawSphere();
-
-					if(bubbleTime >= drawBubbleStart && timeSinceLastBubble > 25)
+					
+					if(bubbleTime >= drawBubbleStart && timeSinceLastBubble > 0.4)
 					{
+						// save location of diver's head to add a bubble
 						bubbleLocations.push(getWorldCoordinates(0, 0.3, 0, modelViewMatrix));
 						timeSinceLastBubble = 0;
 						numberBubblesDrawn += 1;
 					}
 					if(numberBubblesDrawn === numberBubbles)
 					{
+						// bubble group over, prepare for next group
 						bubbleTime = 0;
 						numberBubblesDrawn = 0;
-						numberBubbles = Math.random() < 0.5 ? 4 : Math.random() < 0.75 ? 3 : 5;
-						drawBubbleStart = Math.random() * 100 + 100;
+						numberBubbles = Math.random() < 0.5 ? 4 : Math.random() < 0.75 ? 3 : 5; // 50% chance of 4, 25% chance of 3, 25% chance of 5
+						drawBubbleStart = Math.random() * 3 + 3; // random interval of 100 - 200 frames until next bubble
 					}
-					bubbleTime += 1;
-					timeSinceLastBubble += 1;
+					bubbleTime += dt;
+					timeSinceLastBubble += dt;
 				}
 				gPop(); // diver head
 			}
@@ -610,7 +612,7 @@ function render(timestamp)
 				setColor(vec4(1.0, 1.0, 1.0, 1.0));
 				drawSphere();
 
-				bubbleLocations[i].y += 0.01;
+				bubbleLocations[i].y += dt;
 
 				if (bubbleLocations[i].y >= 10)
 				{
