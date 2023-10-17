@@ -78,6 +78,12 @@ var bubbleLocations = [];
 var timeSinceLastBubble = 0;
 var nextBubble = 0;
 
+let drawBubbleStart = 0;
+let drawBubbleEnd = 0;
+let numberBubbles = 0;
+let numberBubblesDrawn = 0;
+let bubbleTime = 0;
+
 // Setting the colour which is needed during illumination of a surface
 function setColor(c)
 {
@@ -399,12 +405,11 @@ function render(timestamp)
 			
 			gPush(); // fish
 			{
-				// TODO analzye exact equation to use, should use PI and sync with diver
-				fishPosition[1] = fishPosition[1] + 0.02 * Math.cos(timestamp / 590);
 				fishRotation[1] = -timestamp / 30
-				
 				gRotate(fishRotation[1], 0, 1, 0);
-				gTranslate(fishPosition[0], fishPosition[1], fishPosition[2]);
+				
+				gTranslate(2.5, 0.9, 1);
+				gTranslate(0, 0.5 * Math.cos(timestamp / (Math.PI * 280)), 0);
 				
 				gPush(); // fish body
 				{
@@ -479,7 +484,7 @@ function render(timestamp)
 		{
 			gTranslate(4, 5, 0);
 			gRotate(-30, 0, 1, 0);
-			gTranslate(0.6*Math.cos(timestamp/1000), 0.6*Math.cos(timestamp/1000), 0);
+			gTranslate(0.6*Math.cos(timestamp/(Math.PI * 360)), 0.6*Math.cos(timestamp/(Math.PI * 360)), 0);
 			gPush(); // diver
 			{
 				gPush(); // diver body
@@ -564,13 +569,20 @@ function render(timestamp)
 					gScale(0.3, 0.3, 0.3);
 					drawSphere();
 
-					// Log the world coordinates
-					if(timeSinceLastBubble >= nextBubble)
+					if(bubbleTime >= drawBubbleStart && timeSinceLastBubble > 25)
 					{
 						bubbleLocations.push(getWorldCoordinates(0, 0.3, 0, modelViewMatrix));
 						timeSinceLastBubble = 0;
-						nextBubble = Math.random() * 100;
+						numberBubblesDrawn += 1;
 					}
+					if(numberBubblesDrawn === numberBubbles)
+					{
+						bubbleTime = 0;
+						numberBubblesDrawn = 0;
+						numberBubbles = Math.random() < 0.5 ? 4 : Math.random() < 0.75 ? 3 : 5;
+						drawBubbleStart = Math.random() * 100 + 100;
+					}
+					bubbleTime += 1;
 					timeSinceLastBubble += 1;
 				}
 				gPop(); // diver head
@@ -598,7 +610,7 @@ function render(timestamp)
 				setColor(vec4(1.0, 1.0, 1.0, 1.0));
 				drawSphere();
 
-				bubbleLocations[i].y += 0.02;
+				bubbleLocations[i].y += 0.01;
 
 				if (bubbleLocations[i].y >= 10)
 				{
