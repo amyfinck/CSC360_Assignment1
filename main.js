@@ -482,7 +482,7 @@ function render(timestamp)
 		
 		gPush(); // ground box
 		{
-			gTranslate(4, 5, 0);
+			gTranslate(4, 6, 0);
 			gRotate(-30, 0, 1, 0);
 			gTranslate(0.6*Math.cos(timestamp/(Math.PI * 360)), 0.6*Math.cos(timestamp/(Math.PI * 360)), 0);
 			gPush(); // diver
@@ -582,7 +582,7 @@ function render(timestamp)
 						bubbleTime = 0;
 						numberBubblesDrawn = 0;
 						numberBubbles = Math.random() < 0.5 ? 4 : Math.random() < 0.75 ? 3 : 5; // 50% chance of 4, 25% chance of 3, 25% chance of 5
-						drawBubbleStart = Math.random() * 3 + 3; // random interval of 100 - 200 frames until next bubble
+						drawBubbleStart = Math.random() * 2 + 2; // random interval of 100 - 200 frames until next bubble
 					}
 					bubbleTime += dt;
 					timeSinceLastBubble += dt;
